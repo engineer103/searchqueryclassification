@@ -1,0 +1,10 @@
+name: search_vis
+channels:
+  - conda-forge
+dependencies:
+  - bokeh
+  - pandas
+  - matplotlib
+  - matplotlib-venn
+  - seaborn
+  - ipykernel
