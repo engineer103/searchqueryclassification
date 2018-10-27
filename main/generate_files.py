@@ -26,7 +26,9 @@ def run():
     if len(to_process) > 1:
        to_process=[to_process[0]] 
     for f in to_process:
-        inp=f.search_terms_file.search_terms_file.path
+        inp=f.search_terms_file_paid.search_terms_file.path
+        ino=f.search_terms_file_organic.search_terms_file.path
+        inn=f.search_terms_file_new.search_terms_file.path
         print(inp)
         outp=os.path.split(inp)
         r,e=os.path.splitext(outp[-1])
@@ -41,7 +43,9 @@ def run():
             f.status_info=msg
             f.save()   
         try:
-           classify_search_terms(inp,outp,f.search_terms_file.dictionary.dictionary_file.path,log_progress)
+           # We need to classify organic first
+           # since we need to rewrite its stats.
+           classify_search_terms([ino,inp,inn],outp,f.dictionary.dictionary_file.path,log_progress)
         except Exception as e: 
            error=str(traceback.format_exc())[-255:]
            f.status='error'
@@ -49,8 +53,8 @@ def run():
            f.save()
            traceback.print_exc()
         else:
-           cf=f.search_terms_file.classification_file
-           f.search_terms_file.classification_file=File(open(outp,'rb'))
+           cf=f.classification_file
+           f.classification_file=File(open(outp,'rb'))
            cf.save(outf, open(outp,'rb'))
            f.status='done'
            endn=datetime.now()-n

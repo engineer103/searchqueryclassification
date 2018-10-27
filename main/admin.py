@@ -76,10 +76,11 @@ def process(modeladmin, request, queryset):
 process.short_description='Process file (add it to the ProcessingQ)'
 
 class ClassifySearchTermsAdmin(admin.ModelAdmin):
-    actions = [process]
+    #actions = [process]
+    pass
 
 class PQAdmin(admin.ModelAdmin):
-    list_fields = ('search_terms_file','status_info')
+    list_fields = ('search_terms_file_paid','status_info')
 
 admin.site.register(SearchTermsFile,ClassifySearchTermsAdmin)
 admin.site.register(ProcessingQ,PQAdmin)
