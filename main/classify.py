@@ -69,6 +69,15 @@ def classify(v, d,sc=None):
        return 'Unclassified',()
    return ' + '.join(list(classes)),','.join(list(keys))
 
+def is_english(st):
+   try:
+      st.encode('ascii')
+   except UnicodeEncodeError as e:
+      print(e)
+      return False
+   else:
+      return True
+
 def classify_search_terms(paths,out_path,dict_path,log_progress=print):
    sc=SpellChecker()
    # Has to match the order of type of files
@@ -95,6 +104,9 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
             continue
          st=row[0].value
          st=' '.join(str(st).lower().split(' '))
+         if not is_english(st):
+            print('Not english:',repr(st))
+            continue
          if st not in pc:
             pc[st]=[]
          # Add this classification only
@@ -132,6 +144,8 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
             continue
          st=str(st).lower().split(' ')
          sst=' '.join(st)
+         if sst not in pc:
+            continue
          csst=pc[sst]
          if csst == 'added':
             print('Search term has been already added')
