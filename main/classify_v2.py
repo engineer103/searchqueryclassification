@@ -108,10 +108,13 @@ def classify_kws(kws, kwd):
    print('Final')
    # When we left some keywords behind
    # just make them unclassified.
-   for k in kwss:
+   print('Checking for orphan keywords in',clsss, ' based on ', kws)
+   for k in kws:
+       print(k, clsss.find(k))
        if clsss.find(k) != -1:
-           print('Unmatched kw %s -> Unclassfied' % k)
-           clsss.replace(k,'Unclassified')
+           print('Unmatched kw %s -> Unclassified' % k)
+           clsss=clsss.replace(k,'Unclassified')
+   print(clsss)
    # Remove duplicates
    while clsss.find('Unclassified Unclassified') != -1:
        clsss=clsss.replace('Unclassified Unclassified','Unclassified')
