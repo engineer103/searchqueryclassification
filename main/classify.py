@@ -113,7 +113,13 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
          # if it's not already there.
          if ptypes[ip] not in pc[st]:
             pc[st].append(ptypes[ip])
+   
 
+   none_matches=[0,0,0]
+   partial_matches=[0,0,0]
+   full_matches=[0,0,0]
+   # The number of search terms in each portfolio.
+   pt_totals=[0,0,0]
    for ip,ws in enumerate(open_paths):
       i=1
       log_progress('Starting processing rows...')
@@ -151,7 +157,14 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
             print('Search term has been already added')
             continue
          # Trying to classify.
-         sclsi=classify_kws(st, cls_dict)
+         sclsi,tom=classify_kws(st, cls_dict)
+         if tom == 'full':
+            full_matches[ip]+=1
+         elif tom == 'partial':
+            partial_matches[ip]+=1
+         elif tom == 'unclassified':
+            none_matches[ip]+=1
+         pt_totals[ip]+=1
          pclsi=' | '.join(pc[sst])
          # Match this search term as added
          # to prevent duplicates.  
@@ -170,5 +183,22 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
             print(m)
          i+=1
        #print(st, clsi)
+   
+   snames=['full','partial','unclassified']
+   stats=[full_matches,partial_matches,none_matches]
+   out_ws.append(['Total:'])
+   # Total stats for each portfolio.
+   out_ws.append(['Match type/Portfolio']+['+'.join(ptypes)])
+   
+   for i,s in enumerate(stats):
+      spp='%.2f%%' % ((sum(s)*100)/sum(pt_totals))
+      out_ws.append([snames[i]]+[spp])
+   out_ws.append([])
+   # Per portfolio stats
+   out_ws.append(['Per Portfolio:'])
+   out_ws.append(['Match type/Portfolio']+ptypes)
+   for i,s in enumerate(stats):
+      pp=[ '%.2f%%' % ((m*100)/pt_totals[i]) for i,m in enumerate(s) ] 
+      out_ws.append([snames[i]]+pp)
    log_progress('Saving output file...')
    out_wb.save(out_path) 

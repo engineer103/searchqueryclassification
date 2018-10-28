@@ -39,9 +39,9 @@ def classify_kws(kws, kwd):
    if len(kws) == 1:
       c=match(' '.join(kws), kwd)
       if c:
-         return c
+         return c,'full'
       else:
-         return 'Unclassified'
+         return 'Unclassified','unclassified'
    for i in reversed(range(1, len(kwss)+1)):
        print('kw=',i)
        p, pi=perm(i, kwss)
@@ -59,10 +59,11 @@ def classify_kws(kws, kwd):
    print('No match:',kwss)
    print('Classes:',cls)
    print('KWS match:',cls_kws)
+   tof_match=None
    if len(cls) == 0:
       print('Final:')
       print('Unclassified (no match)')
-      return 'Unclassified'
+      return 'Unclassified', 'unclassified'
    print(clsi)
    clsss_kws=' '.join(kws)
    clsss=' '.join(kws)
@@ -105,11 +106,23 @@ def classify_kws(kws, kwd):
          clsss=clsss.replace(newc, ' Unclassified ')
          print(c, 'Unclassified',clsss)
    print('Final')
+   # When we left some keywords behind
+   # just make them unclassified.
+   for k in kwss:
+       if clsss.find(k) != -1:
+           print('Unmatched kw %s -> Unclassfied' % k)
+           clsss.replace(k,'Unclassified')
+   # Remove duplicates
    while clsss.find('Unclassified Unclassified') != -1:
-      clsss=clsss.replace('Unclassified Unclassified','Unclassified')
+       clsss=clsss.replace('Unclassified Unclassified','Unclassified')
    clsss=' '.join(clsss.split()).replace(' ',' + ')
-   print(clsss)
-   return clsss
+   tom='unclassified'
+   cf=clsss.find('Unclassified')
+   if cf == -1:
+       tom='full'
+   elif cf != -1:
+       tom='partial'
+   return clsss, tom
 
 if __name__ == '__main__':
    kws=['best','royal','swimming','pools','kona', 'hawaii']
