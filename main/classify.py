@@ -120,6 +120,9 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
    full_matches=[0,0,0]
    # The number of search terms in each portfolio.
    pt_totals=[0,0,0]
+   from_partial_to_full=0
+   from_unclass_to_partial=0
+   from_unclass_to_full=0
    for ip,ws in enumerate(open_paths):
       i=1
       log_progress('Starting processing rows...')
@@ -157,7 +160,45 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
             print('Search term has been already added')
             continue
          # Trying to classify.
-         sclsi,tom=classify_kws(st, cls_dict)
+         sclsi,tom,um_kws=classify_kws(st, cls_dict)
+         # Try spell correct and classify again
+         sst=' '.join(st)
+         corrected_st=sst
+         current_tom=tom
+         # Trying to improve those two
+         if tom in ('partial','unclassified'):
+            print('Trying to improve ', tom)
+            # Going trought keywords that didn't
+            # have any match
+            for ukw in um_kws:
+               w=Word(ukw)
+               wc=w.correct()
+               # If a spell corrected word is 
+               # is new let's use it
+               if wc != ukw:
+                  corrected_st=corrected_st.replace(ukw, wc)
+                  continue
+               wl=w.lemmatize()
+               if wl != ukw:
+                  corrected_st=corrected_st.replace(ukw, wl)
+                  continue
+         # If we've changed the search term let's
+         # classify it again
+         if corrected_st != sst:
+            #print('Corrected st from %s->%s' % (sst, corrected_st))
+            corrected_st=corrected_st.split()
+            sclsi,tom,um_kws=classify_kws(corrected_st, cls_dict)
+            if current_tom == 'unclassified' and tom == 'partial':
+               print('Corrected from %s to %s!' % (current_tom, tom))
+               st=corrected_st
+               from_unclass_to_partial+=1
+            elif current_tom in ('unclassified','partial') and tom == 'full':
+               print('Corrected from %s to full!' % current_tom)
+               st=corrected_st
+               if current_tom == 'partial':
+                  from_partial_to_full+=1
+               if current_tom == 'unclassified':
+                  from_unclass_to_full+=1
          if tom == 'full':
             full_matches[ip]+=1
          elif tom == 'partial':
@@ -183,7 +224,10 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
             print(m)
          i+=1
        #print(st, clsi)
-   
+   print('Total correction from partial to full: %d' % from_partial_to_full)
+   print('Total correction from unclass to partial: %d' % from_unclass_to_partial)
+   print('Total correction from unclass tofull: %d' % from_unclass_to_full)
+
    snames=['full','partial','unclassified']
    stats=[full_matches,partial_matches,none_matches]
    out_ws.append(['Total:'])
@@ -200,5 +244,10 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
    for i,s in enumerate(stats):
       pp=[ '%.2f%%' % ((m*100)/pt_totals[i]) for i,m in enumerate(s) ] 
       out_ws.append([snames[i]]+pp)
+
+   out_ws.append(['Classification improvements:'])
+   out_ws.append(['Unclassified->Partial',from_unclass_to_partial])
+   out_ws.append(['Partial->Full',from_partial_to_full])
+   out_ws.append(['Unclassified->Full',from_unclass_to_full])
    log_progress('Saving output file...')
    out_wb.save(out_path) 

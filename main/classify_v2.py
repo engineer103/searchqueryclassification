@@ -39,9 +39,9 @@ def classify_kws(kws, kwd):
    if len(kws) == 1:
       c=match(' '.join(kws), kwd)
       if c:
-         return c,'full'
+         return c,'full',[]
       else:
-         return 'Unclassified','unclassified'
+         return 'Unclassified','unclassified',[]
    for i in reversed(range(1, len(kwss)+1)):
        print('kw=',i)
        p, pi=perm(i, kwss)
@@ -63,7 +63,7 @@ def classify_kws(kws, kwd):
    if len(cls) == 0:
       print('Final:')
       print('Unclassified (no match)')
-      return 'Unclassified', 'unclassified'
+      return 'Unclassified', 'unclassified',[]
    print(clsi)
    clsss_kws=' '.join(kws)
    clsss=' '.join(kws)
@@ -125,7 +125,7 @@ def classify_kws(kws, kwd):
        tom='full'
    elif cf != -1:
        tom='partial'
-   return clsss, tom
+   return clsss, tom, kwss
 
 if __name__ == '__main__':
    kws=['best','royal','swimming','pools','kona', 'hawaii']
