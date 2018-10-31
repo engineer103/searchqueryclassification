@@ -1,4 +1,4 @@
-from openpyxl import load_workbook,Workbook
+from openpyxl import load_workbook,Workbook,drawing
 
 # Register your models here.
 from .models import SearchTermsFile,Dictionary 
@@ -6,6 +6,11 @@ from spellchecker import SpellChecker
 from textblob import Word
 from datetime import datetime
 from classify_v2 import classify_kws
+
+# For venn diagram
+from matplotlib import pyplot as plt
+import PIL
+from matplotlib_venn import venn2
 
 def load_dict(d="/home/jakamkon/webapps/upwork_search_classification_static/media/dictonaries/Dictonary.xlsx"):
    wb=load_workbook(d)
@@ -123,6 +128,8 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
    from_partial_to_full=0
    from_unclass_to_partial=0
    from_unclass_to_full=0
+   # Click stats: paid and organic
+   clicks=[0,0]
    for ip,ws in enumerate(open_paths):
       i=1
       log_progress('Starting processing rows...')
@@ -216,6 +223,12 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
             # Fill in extra rows only from
             # organic file.
             newrow+=[ _r.value for _r in row[1:] ]
+            no_clicks=int(row[1].value)
+            # Count clicks
+            if pclsi.find('paid') != -1:
+               clicks[0]+=no_clicks
+            if pclsi.find('organic') != -1:
+               clicks[1]+=no_clicks
          out_ws.append(newrow)
          if i % 1000 == 0:
             n=datetime.now()
@@ -224,10 +237,11 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
             print(m)
          i+=1
        #print(st, clsi)
+   max_rows=i
    print('Total correction from partial to full: %d' % from_partial_to_full)
    print('Total correction from unclass to partial: %d' % from_unclass_to_partial)
    print('Total correction from unclass tofull: %d' % from_unclass_to_full)
-
+   print('Number of clicks', clicks)
    snames=['full','partial','unclassified']
    stats=[full_matches,partial_matches,none_matches]
    out_ws.append(['Total:'])
@@ -242,12 +256,29 @@ def classify_search_terms(paths,out_path,dict_path,log_progress=print):
    out_ws.append(['Per Portfolio:'])
    out_ws.append(['Match type/Portfolio']+ptypes)
    for i,s in enumerate(stats):
-      pp=[ '%.2f%%' % ((m*100)/pt_totals[i]) for i,m in enumerate(s) ] 
+      pp=[]
+      for i, m in enumerate(s):
+         if pt_totals[i] == 0:
+            pp.append('0%')
+         else:
+            pp.append('%.2f%%' % ((m*100)/pt_totals[i])) 
       out_ws.append([snames[i]]+pp)
 
    out_ws.append(['Classification improvements:'])
    out_ws.append(['Unclassified->Partial',from_unclass_to_partial])
    out_ws.append(['Partial->Full',from_partial_to_full])
    out_ws.append(['Unclassified->Full',from_unclass_to_full])
+
+   # Generate venn diagram
+   import tempfile
+   vd=venn2((clicks[0], abs(clicks[0]-clicks[1]),clicks[1]), set_labels = ('Paid', 'Organic'))
+   vdf = tempfile.NamedTemporaryFile()
+   vdf = vdf.name+'.png'
+   plt.savefig(vdf)
+   img = drawing.image.Image(vdf)
+   max_rows=out_ws._max_row+1
+   imgcell='A%d' % max_rows
+   out_ws.add_image(img, imgcell)
+   
    log_progress('Saving output file...')
    out_wb.save(out_path) 
