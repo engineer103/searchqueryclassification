@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from decouple import config
+import dj_database_url
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'rtr_^h*ag+y_p-q)-uif014f2gh9790e)7o%sofn08adkp=!__'
+# SECRET_KEY = 'rtr_^h*ag+y_p-q)-uif014f2gh9790e)7o%sofn08adkp=!__'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -126,12 +130,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-MEDIA_URL = '/media/'
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'main/static'),
+)
+
 #LOGGING_CONFIG=None
 #LOGGING=None
 #FORCE_SCRIPT_NAME=None
 #DEFAULT_TABLESPACE=''
-CF_PATH='upwork_search_classification_static/media/classification_files'
+# CF_PATH='upwork_search_classification_static/media/classification_files'
 
