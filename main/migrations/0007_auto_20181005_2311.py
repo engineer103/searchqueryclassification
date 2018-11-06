@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='searchtermsfile',
             name='classification_file',
-            field=models.FilePathField(blank=True, null=True, path='/home/jakamkon/webapps/upwork_search_classification_static/media/classification_files'),
+            field=models.FilePathField(blank=True, null=True, path='upwork_search_classification_static/media/classification_files'),
         ),
     ]

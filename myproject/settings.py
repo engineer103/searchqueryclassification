@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'main',
+    'background_task'
 ]
 
 MIDDLEWARE = [
@@ -79,9 +80,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': 'localhost',
         'PORT': 5432,
-        'USER': 'search_classification',
+        'USER': 'postgres',
         'NAME': 'search_classification',
-        'PASSWORD': 'shilo99',
+        'PASSWORD': 'postgres',
         'TEST': {
             'NAME': 'test_search_classification',
         },
@@ -126,12 +127,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/home/jakamkon/webapps/upwork_search_classification_static' 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/jakamkon/webapps/upwork_search_classification_static/media'
 #LOGGING_CONFIG=None
 #LOGGING=None
 #FORCE_SCRIPT_NAME=None
 #DEFAULT_TABLESPACE=''
-CF_PATH='/home/jakamkon/webapps/upwork_search_classification_static/media/classification_files'
+CF_PATH='upwork_search_classification_static/media/classification_files'
 

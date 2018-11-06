@@ -43,28 +43,28 @@ def classify_kws(kws, kwd):
       else:
          return 'Unclassified','unclassified',[]
    for i in reversed(range(1, len(kwss)+1)):
-       print('kw=',i)
+       # print('kw=',i)
        p, pi=perm(i, kwss)
        print(p, pi)
        for j, kw in enumerate(p):
            c=match(' '.join(kw), kwd)
            if c:
-               print('Match',kw)
+               # print('Match',kw)
                cls.append(c)
                cls_kws.append(' '.join(kw))
                clsi.append(pi[j])
-               print('X',kwss,kw)
+               # print('X',kwss,kw)
                del kwss[kwss.index(kw[0]):kwss.index(kw[-1])]
-   print('Results:')
-   print('No match:',kwss)
-   print('Classes:',cls)
-   print('KWS match:',cls_kws)
+   # print('Results:')
+   # print('No match:',kwss)
+   # print('Classes:',cls)
+   # print('KWS match:',cls_kws)
    tof_match=None
    if len(cls) == 0:
-      print('Final:')
-      print('Unclassified (no match)')
+      # print('Final:')
+      # print('Unclassified (no match)')
       return 'Unclassified', 'unclassified',[]
-   print(clsi)
+   # print(clsi)
    clsss_kws=' '.join(kws)
    clsss=' '.join(kws)
    for i, c in enumerate(cls_kws):
@@ -84,7 +84,7 @@ def classify_kws(kws, kwd):
             break
       if newc:
          clsss=clsss.replace(newc, ' '+cls[i]+' ')
-      print(c, cls[i], clsss)
+      # print(c, cls[i], clsss)
    # Start from the longest
    kwss.sort(key=len, reverse=True)
    for i, c in enumerate(kwss):
@@ -104,17 +104,17 @@ def classify_kws(kws, kwd):
             newc=p % c
       if newc:
          clsss=clsss.replace(newc, ' Unclassified ')
-         print(c, 'Unclassified',clsss)
-   print('Final')
+         # print(c, 'Unclassified',clsss)
+   # print('Final')
    # When we left some keywords behind
    # just make them unclassified.
-   print('Checking for orphan keywords in',clsss, ' based on ', kws)
+   # print('Checking for orphan keywords in',clsss, ' based on ', kws)
    for k in kws:
-       print(k, clsss.find(k))
+       # print(k, clsss.find(k))
        if clsss.find(k) != -1:
            print('Unmatched kw %s -> Unclassified' % k)
            clsss=clsss.replace(k,'Unclassified')
-   print(clsss)
+   # print(clsss)
    # Remove duplicates
    while clsss.find('Unclassified Unclassified') != -1:
        clsss=clsss.replace('Unclassified Unclassified','Unclassified')

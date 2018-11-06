@@ -1,0 +1,83 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+  <a href="classify/">Classifiy</a>
+  <br />
+  {{ block.super }}  
+{% endblock %}
+
+{% block result_list %}
+  {{ block.super }}
+  {% if full and partial and unclassified %}
+    <p>Total:</p>
+    <table style="width:100%">
+      <tr>
+        <th>Match type/Portfolio</th>
+        <th>organic + paid + none</th>
+      </tr>
+      <tr>
+        <td>full</td>
+        <td>{{full}}</td>
+      </tr>
+      <tr>
+        <td>partial</td>
+        <td>{{partial}}</td>
+      </tr>
+      <tr>
+        <td>unclassified</td>
+        <td>{{unclassified}}</td>
+      </tr>
+    </table>  
+  {% endif %}
+
+  {% if organic_full and paid_full and none_full and organic_partial and paid_partial and none_partial and organic_unclassified and paid_unclassified and none_unclassified %}
+    <br>
+    <p>Per portfolio:</p>
+    <table style="width:100%">
+      <tr>
+        <th>Match type/Portfolio</th>
+        <th>organic</th>
+        <th>paid</th>
+        <th>none</th>
+      </tr>
+      <tr>
+        <td>full</td>
+        <td>{{organic_full}}</td>
+        <td>{{paid_full}}</td>
+        <td>{{none_full}}</td>
+      </tr>
+      <tr>
+        <td>partial</td>
+        <td>{{organic_partial}}</td>
+        <td>{{paid_partial}}</td>
+        <td>{{none_partial}}</td>
+      </tr>
+      <tr>
+        <td>unclassified</td>
+        <td>{{organic_unclassified}}</td>
+        <td>{{paid_unclassified}}</td>
+        <td>{{none_unclassified}}</td>
+      </tr>
+    </table>
+  {% endif %}
+  
+  {% if unclassified_partial and partial_full and unclassified_full %}
+    <br>
+    <p>Classification improvements:</p>
+    <table style="width:100%">
+      <tr>
+        <td>Unclassified->Partial</td>
+        <td>{{unclassified_partial}}</td>
+      </tr>
+      <tr>
+        <td>Partial->Full</td>
+        <td>{{partial_full}}</td>
+      </tr>
+      <tr>
+        <td>Unclassified->Full</td>
+        <td>{{unclassified_full}}</td>
+      </tr>
+    </table>
+  {% endif %}  
+{% endblock %}
+
